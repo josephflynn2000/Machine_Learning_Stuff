@@ -38,11 +38,11 @@ stock$SPY.Per_Rent <- 100*((stock$SPY.Adjusted/lag(stock$SPY.Adjusted))-1)
 #Add lagged Adjusted Close
 
 #lags1to5
-stock$Lag1 <- lag(stock$SPY.Adjusted,1)
-stock$Lag2 <- lag(stock$SPY.Adjusted,2)
-stock$Lag3 <- lag(stock$SPY.Adjusted,3)
-stock$Lag4 <- lag(stock$SPY.Adjusted,4)
-stock$Lag5 <- lag(stock$SPY.Adjusted,5)
+stock$Lag1 <- lag(stock$SPY.Per_Rent,1)
+stock$Lag2 <- lag(stock$SPY.Per_Rent,2)
+stock$Lag3 <- lag(stock$SPY.Per_Rent,3)
+stock$Lag4 <- lag(stock$SPY.Per_Rent,4)
+stock$Lag5 <- lag(stock$SPY.Per_Rent,5)
 
 #Add indicator for stock movement
 
@@ -69,7 +69,7 @@ set.seed(1)
 #Number of rows for sample
 #Take sample of <= 80% of data, no replacement
 n <- nrow(stock)
-Shuffle = sample(n,floor(.8*n))
+Shuffle = sort(sample(n,floor(.8*n)))
 
 #80% of stock in train, 20% of stock in test (randomly selected)
 train <- stock[Shuffle,]
