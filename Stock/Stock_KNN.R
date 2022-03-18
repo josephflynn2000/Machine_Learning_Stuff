@@ -4,11 +4,13 @@ train <- read.csv("./Stock/SPY_train.csv")
 test <- read.csv("./Stock/SPY_test.csv")
 
 #----Step 2: Check for Missing Values -----------------------------------------#
-sum(is.na(train))
-sum(is.na(test))
+print(sum(is.na(train)))
+print(sum(is.na(test)))
 
+#----Step 3: Some Visuals------------------------------------------------------#
 head(train)
 plot(train$Lag1,train$Lag2,col=as.factor(train$Direction))
+
 
 train.X = cbind(train$Lag1,train$Lag2,train$Lag3)
 train.Y = train$Direction

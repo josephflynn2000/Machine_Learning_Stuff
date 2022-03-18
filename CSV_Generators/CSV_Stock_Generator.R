@@ -57,7 +57,7 @@ stock$SPY.Range <- stock$SPY.High-stock$SPY.Low
 #Remove Na's from Manipulation process
 
 #The first 5 rows contain NA values, so remove them
-stock <- stock[-c(1:5),]
+stock <- stock[-c(1:6),]
 
 #Reset index names
 rownames(stock) <- 1:nrow(stock)
