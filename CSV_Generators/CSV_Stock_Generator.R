@@ -1,66 +1,62 @@
 #Required packages
 library(tidyverse)
-library(lubridate)
-library(quantmod)
-library(class)
-library(zoo)
-library(xts)
+library(tidyquant)
 
 ########################### STEP1: IMPORT STOCK DATA ###########################
 
 #Downloads SPY data from yahoo finance from 2006 to today
-stock <- data.frame(getSymbols(Symbols = "SPY", from = "2006-01-01", auto.assign = FALSE))
+stock <- tq_get("SPY", get = "stock.prices")
 
 ############################## STEP 2: CLEAN DATA ##############################
 
 #Checks for Na values. If none, proceed
-sum(is.na(stock))
+check <- sum(is.na(stock))
+
+if(check != 0){
+  print("PROBLEM!!!")
+}else{
+  rm(check)
+}
+
+#Remove symbol since we are working with one stock
+stock <- stock[,-grep("symbol",colnames(stock))]
+
+#Removes duplicates
+stock <- stock[!duplicated(stock$date),]
 
 ########################### STEP3: DATA MANIPULATION ###########################
 
-# To make life easier, Change date from index to its own column
-
-#Save the index (currently in Dates)
-SPY.Date <- as.Date(rownames(stock), format = "%Y-%m-%d")
-
-#Add dates into a separate column
-stock <- add_column(stock, SPY.Date, .before = "SPY.Open")
-
-
-#opens some memory and delete temporary date
-rm(SPY.Date)
-
 # Add percent gain or loss
 
-#Add percent gain or loss column
-stock$SPY.Per_Rent <- 100*((stock$SPY.Adjusted/lag(stock$SPY.Adjusted))-1)
+#Add percent gain or loss column (Daily Rate of Return)
+stock$daily_ror <- 100*((stock$adjusted/lag(stock$adjusted))-1)
 
-#Add lagged Adjusted Close
+#Add lagged Daily ROR
 
 #lags1to5
-stock$Lag1 <- lag(stock$SPY.Per_Rent,1)
-stock$Lag2 <- lag(stock$SPY.Per_Rent,2)
-stock$Lag3 <- lag(stock$SPY.Per_Rent,3)
-stock$Lag4 <- lag(stock$SPY.Per_Rent,4)
-stock$Lag5 <- lag(stock$SPY.Per_Rent,5)
+stock$lag1 <- lag(stock$daily_ror,1)
+stock$lag2 <- lag(stock$daily_ror,2)
+stock$lag3 <- lag(stock$daily_ror,3)
+stock$lag4 <- lag(stock$daily_ror,4)
+stock$lag5 <- lag(stock$daily_ror,5)
 
 #Add indicator for stock movement
 
 #Up for a positive return and down for any non-positive return
-stock$Direction <- ifelse(stock$SPY.Per_Rent>0,"Up","Down")
+stock$direction <- ifelse(stock$daily_ror>0,"Up","Down")
 
 #Add daily range
 
 #Daily range is the difference between high and low for a day
-stock$SPY.Range <- stock$SPY.High-stock$SPY.Low
+stock$range <- stock$high-stock$low
 
 #Remove Na's from Manipulation process
 
-#The first 5 rows contain NA values, so remove them
-stock <- stock[-c(1:6),]
+#Removes rows that contain NA values
+stock <- na.omit(stock)
 
-#Reset index names
-rownames(stock) <- 1:nrow(stock)
+#Write csv (full data)
+write.csv(stock,"./Stock/SPY_full.csv", row.names = FALSE)
 
 ############################## STEP 4: SPLIT DATA ##############################
 #Set seed for repeatable results
@@ -75,10 +71,10 @@ Shuffle = sort(sample(n,floor(.8*n)))
 train <- stock[Shuffle,]
 test <- stock[-Shuffle,]
 
-write.csv(train,"./Stock/SPY_train.csv")
-write.csv(test,"./Stock/SPY_test.csv")
+write.csv(train,"./Stock/SPY_train.csv", row.names = FALSE)
+write.csv(test,"./Stock/SPY_test.csv", row.names = FALSE)
 
-rm(stock, test, train, n, Shuffle)
+rm(stock, full, test, train, n, Shuffle)
 
 
 

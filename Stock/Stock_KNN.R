@@ -1,7 +1,9 @@
 #----Step 1: Import Stock Data ------------------------------------------------#
+
 #import stock data 
 train <- read.csv("./Stock/SPY_train.csv")
 test <- read.csv("./Stock/SPY_test.csv")
+
 
 #----Step 2: Check for Missing Values -----------------------------------------#
 print(sum(is.na(train)))
