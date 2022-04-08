@@ -13,6 +13,8 @@ Shuffle <- sort(sample(n,floor(.8*n)))
 train <- iris[Shuffle,]
 test <- iris[-Shuffle,]
 
+#Full iris data is within R and dosen't need to be turned into a csv
+
 #Writes data to csv files
 write.csv(train, "./Iris/Iris_train.csv")
 write.csv(test, "./Iris/Iris_test.csv")
