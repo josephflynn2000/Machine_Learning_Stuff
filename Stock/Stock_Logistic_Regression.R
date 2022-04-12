@@ -11,8 +11,8 @@ full <- read.csv("./Stock/SPY_full.csv")
 print(sum(is.na(train)))
 print(sum(is.na(test)))
 
-#----Simple Linear Regression -------------------------------------------------#
-#----Step 1: 
-lm.fit <- lm(adjusted ~ daily_ror, data = test)
-plot(lm.fit)
-plot(as.Date(full$date),full$adjusted)
+
+log <- glm(formula = as.factor(direction) ~ lag1 + lag2 + lag3 + lag4 + lag5 + volume, family = binomial ,data=full)
+log2 <- glm(formula = as.factor(direction) ~ lag1 + lag3 + lag4 + lag5 + volume, family = binomial ,data=full)
+log3 <- glm(formula = as.factor(direction) ~ lag1 + lag3 + lag4 + volume, family = binomial ,data=full)
+p <- predict(log2, type = "response")
